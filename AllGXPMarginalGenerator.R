@@ -4,7 +4,7 @@ install.packages('dplyr')
 library(dplyr)
 
 
-dPath <- paste0('L:/DuncanFulton/MarginalGeneration/Data/')
+dPath <- paste0('L:/DuncanFulton/Marginal-Generation/Data/')
 
 
 
