@@ -19,13 +19,12 @@ CSV_LinksFinalPricingAllYears <- pageFinalPricing %>%
   paste("https://www.emi.ea.govt.nz",  ., sep="" )
 
 
-rows <- CSV_LinksFinalPricingAllYears[27:38]
-dfFinalPricing2019 <- rbind(lapply(rows, read.csv()))
 
-#i <- 27:38
 
-start_index = 27
-for(i in start_index:38){
+#i <- 39:50
+
+start_index = 39
+for(i in start_index:50){
   dftemp <- read.csv(paste0(CSV_LinksFinalPricingAllYears[i]))
   if (i == start_index){
     df <- dftemp
@@ -34,10 +33,10 @@ for(i in start_index:38){
   }
 }
 
-dfFinalPricing2019 <- df
+dfFinalPricing2018 <- df
+
+readr::write_csv(dfFinalPricing2018, paste0(dPath, 'FinalPricing2018.csv'))
 
 
-readr::write_csv(dfFinalPricing2019, paste0(dPath, 'FinalPricing2019.csv'))
-
-
-
+#rows <- CSV_LinksFinalPricingAllYears[27:38]
+#dfFinalPricing2019 <- rbind(lapply(rows, read.csv()))
