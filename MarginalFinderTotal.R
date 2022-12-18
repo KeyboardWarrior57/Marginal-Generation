@@ -57,7 +57,7 @@ for(i in 1:length(CSV_LinksOffers)) {
 
 for(i in 1:365){
    dfJoined <-left_join(get(paste0('2015data', i)),dfFinalPrice) %>%
-    filter(ProductType == 'Energy')%>%
+    filter(dfJoined$ProductType == 'Energy')%>%
     filter(dfJoined$DollarsPerMegawattHour > 0) %>%
     filter(dfJoined$DollarsPerMegawattHour <= dfJoined$DollarsPerMegawattHourFinal)%>%
     group_by(TradignDate, TradingPeriod, PointOfConnection, PointOfConnectionFinal, DollarsperMegawattHour)%>%
