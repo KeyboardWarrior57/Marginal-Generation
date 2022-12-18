@@ -53,7 +53,8 @@ for(i in 1:length(CSV_LinksOffers)) {
 
 
 for(i in 1:10){
-  df <- (paste0('data', i)), dfFinalPrice) %>%
+  df <- (paste0('data', i)) %>%
+    left_join(df,dfFinalPrice)
     filter(ProductType == 'Energy')%>%
     filter(DollarsPerMegawattHour <= DollarsPerMegawattHourFinal)%>%
     group_by(TradignDate, TradingPeriod, PointOfConnection, PointOfConnectionFinal)%>%
