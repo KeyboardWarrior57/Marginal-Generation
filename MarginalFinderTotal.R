@@ -34,6 +34,9 @@ dfFinalPrice <- read_csv(paste0(dPath, 'FinalPrices.csv'))
 colnames(dfFinalPrice) <- c("TradingDate","TradingPeriod", 
                             "PointOfConnectionFinal","DollarsPerMegawattHourFinal")
 
+
+dfFinalPrice$TradingDate <- as.character(dfFinalPrice$TradingDate)
+
 yearIndex <- 2019
 
 linkOffers <- paste0('https://www.emi.ea.govt.nz/Wholesale/Datasets/BidsAndOffers/Offers/',
@@ -52,17 +55,17 @@ for(i in 1:length(CSV_LinksOffers)) {
          read.csv(paste(CSV_LinksOffers[i])))}
 
 
-for(i in 1:10){
-  df <- (paste0('data', i)) %>%
-    left_join(df,dfFinalPrice)
+for(i in 1:365){
+   dfJoined <-left_join(get(paste0('2015data', i)),dfFinalPrice) %>%
     filter(ProductType == 'Energy')%>%
-    filter(DollarsPerMegawattHour <= DollarsPerMegawattHourFinal)%>%
-    group_by(TradignDate, TradingPeriod, PointOfConnection, PointOfConnectionFinal)%>%
+    filter(dfJoined$DollarsPerMegawattHour > 0) %>%
+    filter(dfJoined$DollarsPerMegawattHour <= dfJoined$DollarsPerMegawattHourFinal)%>%
+    group_by(TradignDate, TradingPeriod, PointOfConnection, PointOfConnectionFinal, DollarsperMegawattHour)%>%
     summarise(MaxOffer = max(DollarsPerMegawattHour))
 }
   
-  
-  
+
+ 
   
 #for(i in 1:length(CSV_LinksOffers)){
  # dfOffers <- read_csv(paste0(CSV_LinksOffers[1]))
