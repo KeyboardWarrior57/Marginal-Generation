@@ -15,12 +15,15 @@ if (file.exists(paste0(dPath,  # Check if final prices already downloaded
   dfFinalPrice <- read_csv(paste0(dPath, 'FinalPrices.csv'))
 } else {                       # If they are not, download them
   CSV_LinksFinalPricingAllYears <- pageFinalPricing %>% 
+
     html_nodes(".csv a") %>% 
     html_attr("href") %>% 
     paste("https://www.emi.ea.govt.nz",  ., sep="" )
   
   for (i in 1:110){
     dftemp <- read_csv(paste0(CSV_LinksFinalPricingAllYears[i]))
+    dftemp <- read_csv(paste0(CSV_LinksFinalPricingAllYears[i]))                      #Reading all CSVs and then binding them together(110 monthly CSVs)
+
     if (i == 1){
       df <- dftemp
     } else {
@@ -30,27 +33,41 @@ if (file.exists(paste0(dPath,  # Check if final prices already downloaded
   
   dfFinalPrice <- df
   write_csv(dfFinalPrice, paste0(dPath, 'FinalPrices.csv'))
+
+  dfFinalPrice <- df 
+  write_csv(dfFinalPrice, paste0(dPath, 'FinalPrices.csv'))                          #Saving Final Pricing CSVs
 }
 
 colnames(dfFinalPrice) <- c("TradingDate","TradingPeriod", 
+dfFinalPriceOTA2201 <-  dfFinalPrice %>%
+  filter(PointOfConnection == 'OTA2201')
+
+
+colnames(dfFinalPriceOTA2201) <- c("TradingDate","TradingPeriod",                           #Changing col names so Left_Join works further down
                             "GXP","DollarsPerMegawattHourFinal")
 
 #yearIndex <- 2019
 
 for (yearIndex in c(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) {
+
+for (yearIndex in c(2016, 2017, 2018, 2019, 2020)) {               #For loops for what years of data we want
   print(paste('Year', yearIndex))
   linkOffers <-
     paste0(
       'https://www.emi.ea.govt.nz/Wholesale/Datasets/BidsAndOffers/Offers/',
+      'https://www.emi.ea.govt.nz/Wholesale/Datasets/BidsAndOffers/Offers/',          #Web address of data
       as.character(yearIndex)
     )
   
   pageOffers <- read_html(linkOffers)
   
   CSV_LinksOffers <- pageOffers %>%
+  
+  CSV_LinksOffers <- pageOffers %>%                                                 #Creating an array of CSV url links
     html_nodes(".csv a") %>%
     html_attr("href") %>%
     paste("https://www.emi.ea.govt.nz",  ., sep = "")
+    paste("https://www.emi.ea.govt.nz",  ., sep = "")                             
   
   
   for (i in 1:length(CSV_LinksOffers)) {
@@ -62,6 +79,7 @@ for (yearIndex in c(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) {
       filter(DollarsPerMegawattHour > 0) %>%
       filter(DollarsPerMegawattHour <= DollarsPerMegawattHourFinal)
     dfMarginal <- dfJoined %>%
+    dfMarginalOTA2201 <- dfJoinedOTA2201 %>%
       group_by(TradingDate,
                TradingPeriod,
                GXP) %>%
@@ -107,4 +125,17 @@ for (yearIndex in c(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) {
   #   group_by(TradingDate,TradingPeriod, PointOfConnection, PointofConnectionFinal) %>%
   #   summarise(MaxOffer = max(DollarsPerMegawattHour))
   # 
-  # dfFinalGIPMatch <- dfFinalPrice[dfFinalPrice$PointOfConnection %in% dfJoined$PointOfConnection,]
+  # dfFinalGIPMatch <- dfFinalPrice[dfFinalPrice$PointOfConnection %in% dfJoined$PointOfConnection,]  # dfFinalGIPMatch <- dfFinalPrice[dfFinalPrice$PointOfConnection %in% dfJoined$PointOfConnection,]
+=======
+# dfOffers <- read_csv(paste0(CSV_LinksOffers[1]))
+#dfJoined <- left_join(dfOffers,dfFinalPrice[dfFinalPrice$TradingDate == dfOffers$TradingDate[1], ]) # restrict FinalPrices to only date we have data for
+#df <- dfJoined[dfJoined$DollarsPerMegawattHour <= dfJoined$DollarsPerMegawattHourFinal,]
+#df <- df[df$Megawatts>0,]
+#df <- df[df$ProductDescription == "Energy injected at a point of connection",]}
+# 
+# dfMarginal <- df %>%
+#   group_by(TradingDate,TradingPeriod, PointOfConnection, PointofConnectionFinal) %>%
+#   summarise(MaxOffer = max(DollarsPerMegawattHour))
+# 
+# dfFinalGIPMatch <- dfFinalPrice[dfFinalPrice$PointOfConnection %in% dfJoined$PointOfConnection,]
+>>>>>>> Stashed changes
