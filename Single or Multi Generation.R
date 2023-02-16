@@ -1,3 +1,16 @@
+#### 
+
+
+dfGrouped <- dfRegion %>% 
+  group_by(TradingDate, TradingPeriod) %>%
+  summarise( obs = n())
+
+
+dfGrouped$NumberOfGens <- if_else(dfGrouped$obs == 1, "Single", "Multiple")
+
+
+dfSingleOrMulti <- left_join(dfRegion, dfGrouped)
+
 
 dfSingle <- dfSingleOrMulti %>%
   filter(NumberOfGens == "single")
