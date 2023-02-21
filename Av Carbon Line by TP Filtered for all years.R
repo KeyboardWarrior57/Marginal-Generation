@@ -22,6 +22,7 @@ for (yearIndex in c(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) {
   
   av_carbon_intensity <- df %>%
     group_by(TradingPeriod) %>%
+    na.omit() %>%                                      ## Trading Period in 2020 this method couldn't pick up a marg gen for so ruined graphs
     summarise(av = mean(CarbonIntensity))
   
   
@@ -29,9 +30,11 @@ for (yearIndex in c(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) {
                aes(x = TradingPeriod, y = av)) +
       geom_line(aes(), size = 1.5, color = "#5accc6") + 
       labs(title = "Average Carbon Intensity over the of a Day",
+           subtitle = as.character(yearIndex),
            x = "TradingPeriods",
            y = "Carbon Intensity (kg CO2/KWh)") +
       theme_fivethirtyeight() +
+      ylim(0, 0.06) +
       theme(axis.title = element_text())
     p
     
