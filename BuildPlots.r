@@ -1,7 +1,7 @@
 #### This script builds the plots from preprocessed data
 
 #### Line Graph of Carbon intensity by each TP for all seasons
-# supercedes All seasons on one graph av carbon line.R
+# supersedes All seasons on one graph av carbon line.R
 
 pacman::p_load(readr, dplyr, readxl, ggplot2, ggthemes, lubridate)
 
@@ -14,10 +14,11 @@ colnames(GeneratorLocation) <- c("Generator", "Region", "Island")
 GeneratorsFuelType <- read_excel(paste0(dPath, "GeneratorsAndFuelType.xlsx"))
 
 # Process data
-# years 2015 to 2022
-years <- c(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)
+# years 2015 to 2021 (2022 needs repprocessing to include ParticipantCode col)
+years <- c(2015, 2016, 2017, 2018, 2019, 2020, 2021)
 
 for (yearIndex in years) {
+  print(yearIndex)
   data_framet <- read_csv(paste0(dPath, "MarginalGenerator", as.character(yearIndex), "_filtered.csv"))
   data_framet$Year <- yearIndex
   if (yearIndex == 2015) {
@@ -86,7 +87,7 @@ ggsave(paste0(pPath, "AllSeasonsDailyProfileCarbonIntensity2015-2022.png"),
 )
 
 #### Line graph of average carbon intensity daily profile by season for each year
-# This supercedes the scripts 'All_seasons Av line 2019 (ref year)/2020 (wet year).r'
+# This supersedes the scripts 'All_seasons Av line 2019 (ref year)/2020 (wet year).r'
 # and 'All seasons stacked bar 2019 (Ref year)/2020 (dry).r'
 
 dfRegion <- left_join(df_full, GeneratorLocation)
@@ -171,18 +172,15 @@ for (year in years) {
       theme(axis.title = element_text())
 
 
-    ggsave(paste0(pPath, "StackedBarbyTP", seasonIndex, ".png")),
+    ggsave(paste0(pPath, "StackedBarbyTP", seasonIndex, ".png"),
       plot = p2, width = 10, height = 6, dpi = 300)
+    
+    
   }
 
 
-
-
-
-
-
 ### Line Graph of Average Carbon Intensity over a Day by Island
-# (supercedes av Carbon Line by TP filtered for 2015-2022)
+# (supersedes av Carbon Line by TP filtered for 2015-2022)
 
 
 av_carbon_intensityBoth <- dfRegion %>%
@@ -202,21 +200,42 @@ av_carbon_intensity <- rbind(av_carbon_intensityBoth, av_carbon_intensityNI)
 
 myColors <- c("#5accc6", "#b53f0d")
 
-{
-  p1 <- ggplot(data = av_carbon_intensity, aes(x = TradingPeriod, y = av, color = Island)) +
-    geom_line(linewidth = 1.5) +
-    labs(
-      title = "Average Carbon Intensity over the of a Day",
-      subtitle = "During 2015-2022",
-      x = "TradingPeriod",
-      y = "Carbon Intensity (kg CO2/KWh)",
-      color = "Area"
-    ) +
-    theme_fivethirtyeight() +
-    ylim(0, NA) +
-    theme(axis.title = element_text()) +
-    scale_color_manual(values = myColors)
-  p1
+p1 <-
+  ggplot(data = av_carbon_intensity, aes(x = TradingPeriod, y = av, color = Island)) +
+  geom_line(linewidth = 1.5) +
+  labs(
+    title = "Average Carbon Intensity over the of a Day",
+    subtitle = "During 2015-2022",
+    x = "TradingPeriod",
+    y = "Carbon Intensity (kg CO2/KWh)",
+    color = "Area"
+  ) +
+  theme_fivethirtyeight() +
+  ylim(0, NA) +
+  theme(axis.title = element_text()) +
+  scale_color_manual(values = myColors)
+p1
 
-  ggsave(paste0(pPath, "AvCarbonLinebyTP2015-2022filtered.png"))
+ggsave(paste0(pPath, "AvCarbonLinebyTP2015-2022filtered.png"))
+
+
+# This supersedes All seasons stacked bar 2019 (Ref) and 2020 (Dry)
+seasons <- unique(df$Season)
+for (year in years) {
+  dftmp <- df_full[df_full$Year == year, ]
+  for (season in seasons) {
+    p <- ggplot(data = dftmp[dftmp$Season == season,],
+                aes(x = TradingPeriod)) +
+      geom_bar(position = "fill", aes(fill = factor(TypeOfFuel))) +
+      theme_fivethirtyeight() +
+      labs(
+        x = 'Trading Period',
+        y = 'Ratio',
+        title = paste0('Generation Per Trading Period (', season, ' ', as.character(year), ')'),
+        fill = 'Generation Type'
+      ) +
+      theme(axis.title = element_text())
+    p
+    ggsave(paste0(pPath, 'stackedbars/', season, year, '.png'), height = 6, width = 7.5)
+  }
 }
