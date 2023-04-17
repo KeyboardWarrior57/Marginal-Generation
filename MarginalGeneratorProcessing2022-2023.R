@@ -1,8 +1,7 @@
 pacman::p_load(readxl, readr, dplyr, data.table, rvest)
 
-#### Need to add a dPath here, e.g dPath <- paste0('L:/ ....... /Marginal-Generation/Data/')
-
-############################
+# Set data path
+dPath <- paste0(here::here(), "/Data/")
 
 linkFinalPricing <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/DispatchAndPricing/FinalEnergyPrices"     #URL from EMI website
 
@@ -81,9 +80,6 @@ for (yearIndex in c(2022, 2023)) {
 }
 
 
-
-
-
 #####New Zealand now uses, (as of roughly january 2023) a dispatch pricing method in the spot market, hence there can be different marginal generators for different
 # dispatch periods of each trading period. 
 # The offers for different dispatch periods of a trading period can still be found in the offer sheets, however the final prices are calculated as
@@ -92,6 +88,6 @@ for (yearIndex in c(2022, 2023)) {
 # to calculate the TWA final prices.
 # To calculate the marginal generator for past Jan 2023 you'll need to get hold of the final prices for different dispatch periods within each trading 
 # period from EMI somehow, preferably a big csv for all of them. 
-# Then you could jsut use "filter(TimeFinal == TimeOffer)" or something similar to filter the final pricing and offers for the same dispatch period within
+# Then you could just use "filter(TimeFinal == TimeOffer)" or something similar to filter the final pricing and offers for the same dispatch period within
 # each trading period. 
 # I'd also use a time weighted average to calculate the carbon intensity for each trading period. 

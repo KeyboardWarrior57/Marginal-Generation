@@ -1,9 +1,7 @@
 pacman::p_load(readxl, readr, dplyr, data.table, rvest)
 
-### Need to add a dPath here, e.g dPath <- paste0('L:/ ....... /Marginal-Generation/Data/') 
-
-
-############################
+# Set data path
+dPath <- paste0(here::here(), "/Data/")
 
 linkFinalPricing <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/DispatchAndPricing/FinalEnergyPrices/ByMonth"      #URL from EMI website
 
